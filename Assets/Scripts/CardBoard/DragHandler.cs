@@ -12,6 +12,8 @@ public class DragHandler : MonoBehaviour
     private InputManager _inputManager;
     
     private bool _isTouchPressed = false;
+    // [HideInInspector]
+    public bool CanDrag;
     private Vector3 _velocity;
     private Camera _mainCamera;
     private WaitForFixedUpdate _waitForFixedUpdate = new WaitForFixedUpdate();
@@ -33,6 +35,7 @@ public class DragHandler : MonoBehaviour
     {
         _mainCamera = Camera.main;
         _inputManager = InputManager.Instance;
+        CanDrag = true;
 
     }
 
@@ -51,7 +54,10 @@ public class DragHandler : MonoBehaviour
     {
         // Debug.Log("TouchPressed DH");
         _isTouchPressed = true;
-        Ray ray = Camera.main.ScreenPointToRay(_inputManager.GetTouchPostion());
+        
+        if (!CanDrag) return;
+        
+        Ray ray = _mainCamera.ScreenPointToRay(_inputManager.GetTouchPostion());
         Debug.DrawRay(ray.origin, ray.direction *10, Color.red); // debug ray
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
@@ -68,7 +74,7 @@ public class DragHandler : MonoBehaviour
     private IEnumerator DragUpdate(GameObject clickedObject)
     {
         float initialDistanceFromCamera =
-            Vector3.Distance(clickedObject.transform.position, Camera.main.transform.position);
+            Vector3.Distance(clickedObject.transform.position, _mainCamera.transform.position);
         clickedObject.TryGetComponent<Rigidbody>(out var rb);
         clickedObject.TryGetComponent<IDraggable>(out var iDragComponent);
         
@@ -76,7 +82,7 @@ public class DragHandler : MonoBehaviour
         
         while (_isTouchPressed)
         {
-            Ray ray = Camera.main.ScreenPointToRay(_inputManager.GetTouchPostion());
+            Ray ray = _mainCamera.ScreenPointToRay(_inputManager.GetTouchPostion());
             Debug.DrawRay(ray.origin, ray.direction *10, Color.yellow); // debug ray
             if (rb != null)
             {
