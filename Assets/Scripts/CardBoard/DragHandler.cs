@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class DragHandler : Singleton<DragHandler>
+public class DragHandler : MonoBehaviour
 {
     [SerializeField] private float _dragPhysicsSpeed = 5f;
     [SerializeField] private float _dragSpeed = 0.1f;
-    
-    
+
+    private InputManager _inputManager;
     
     private bool _isTouchPressed = false;
     private Vector3 _velocity;
@@ -18,20 +18,22 @@ public class DragHandler : Singleton<DragHandler>
 
     private void OnEnable()
     {
-        InputManager.TouchPressed += OnTouchPressed;
-        InputManager.TouchReleased += OnTouchReleased;
+        _inputManager = InputManager.Instance;
+        _inputManager.TouchPressed += OnTouchPressed;
+        _inputManager.TouchReleased += OnTouchReleased;
     }
 
     private void OnDisable()
     {
-        InputManager.TouchReleased -= OnTouchPressed;
-        InputManager.TouchReleased -= OnTouchReleased;
+        _inputManager.TouchReleased -= OnTouchPressed;
+        _inputManager.TouchReleased -= OnTouchReleased;
     }
 
-    protected override void Awake()
+    private void Awake()
     {
-        base.Awake();
         _mainCamera = Camera.main;
+        _inputManager = InputManager.Instance;
+
     }
 
     void Start()
@@ -45,16 +47,16 @@ public class DragHandler : Singleton<DragHandler>
         // Debug.Log($"DH TouchPos: {InputManager.Instance.TouchPosition}");
 
     }
-    public void OnTouchPressed()
+    private void OnTouchPressed()
     {
         // Debug.Log("TouchPressed DH");
         _isTouchPressed = true;
-        Ray ray = _mainCamera.ScreenPointToRay(InputManager.Instance.GetTouchPostion());
+        Ray ray = Camera.main.ScreenPointToRay(_inputManager.GetTouchPostion());
         Debug.DrawRay(ray.origin, ray.direction *10, Color.red); // debug ray
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
-            Debug.Log(hit.collider.name);
+            // Debug.Log(hit.collider.name);
             if (hit.collider != null && hit.collider.gameObject.GetComponent<IDraggable>() != null)
             {
                 // Debug.Log($"Clicking object {hit.collider.name}");
@@ -66,7 +68,7 @@ public class DragHandler : Singleton<DragHandler>
     private IEnumerator DragUpdate(GameObject clickedObject)
     {
         float initialDistanceFromCamera =
-            Vector3.Distance(clickedObject.transform.position, _mainCamera.transform.position);
+            Vector3.Distance(clickedObject.transform.position, Camera.main.transform.position);
         clickedObject.TryGetComponent<Rigidbody>(out var rb);
         clickedObject.TryGetComponent<IDraggable>(out var iDragComponent);
         
@@ -74,15 +76,15 @@ public class DragHandler : Singleton<DragHandler>
         
         while (_isTouchPressed)
         {
-            Ray ray = _mainCamera.ScreenPointToRay(InputManager.Instance.GetTouchPostion());
+            Ray ray = Camera.main.ScreenPointToRay(_inputManager.GetTouchPostion());
             Debug.DrawRay(ray.origin, ray.direction *10, Color.yellow); // debug ray
             if (rb != null)
             {
-                iDragComponent?.OnDragging();
-                
-                Debug.Log($"Clicking RB object in DragUpdate {rb.name}");
+                // Debug.Log($"Clicking RB object in DragUpdate {rb.name}");
                 Vector3 direction = ray.GetPoint(initialDistanceFromCamera) - clickedObject.transform.position;
                 rb.velocity = direction * _dragPhysicsSpeed;
+                
+                iDragComponent?.OnDragging();
                 yield return _waitForFixedUpdate;
             }
             else
@@ -93,9 +95,10 @@ public class DragHandler : Singleton<DragHandler>
             }
         }
         iDragComponent?.OnEndDrag();
+        
     }
     
-    public void OnTouchReleased()
+    private void OnTouchReleased()
     {
         // Debug.Log("TouchReleased DH");
         _isTouchPressed = false;

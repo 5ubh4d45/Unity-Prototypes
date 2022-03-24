@@ -22,10 +22,10 @@ public class UIRotateButtonManager : MonoBehaviour
 
     public void SetRotationLeft()
     {
-        _rotation = -1;
+        _rotation = 1;
     }
     public void SetRotationRight()
     {
-        _rotation = 1;
+        _rotation = -1;
     }
 }

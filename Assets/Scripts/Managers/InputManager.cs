@@ -5,10 +5,10 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
-public class InputManager : PersistentSingleton<InputManager>
+public class InputManager : GenericSingletonClass<InputManager>
 {
-    public static event Action TouchPressed;
-    public static event Action TouchReleased;
+    public event Action TouchPressed;
+    public event Action TouchReleased;
 
     
     // private Vector2 _touchPosition;
@@ -34,7 +34,7 @@ public class InputManager : PersistentSingleton<InputManager>
         _playerActions.PlayerActionMap.PrimaryContact.canceled += OnTouchReleased;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         _playerActions.PlayerActionMap.PrimaryContact.started -= OnTouchPressed;
         _playerActions.PlayerActionMap.PrimaryContact.canceled -= OnTouchReleased;
