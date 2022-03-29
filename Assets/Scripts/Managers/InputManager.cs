@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
-public class InputManager : GenericSingletonClass<InputManager>
+public class InputManager : MonoBehaviour
 {
     public static event Action TouchPressed;
     public static event Action TouchReleased;
@@ -16,9 +16,9 @@ public class InputManager : GenericSingletonClass<InputManager>
     private bool _isTouchPressed = false;
     private PlayerActions _playerActions;
 
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
+        // base.Awake();
         _playerActions = new PlayerActions();
     }
     
@@ -35,7 +35,7 @@ public class InputManager : GenericSingletonClass<InputManager>
         _playerActions.PlayerActionMap.PrimaryContact.canceled += OnTouchReleased;
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         _playerActions.PlayerActionMap.PrimaryContact.started -= OnTouchPressed;
         _playerActions.PlayerActionMap.PrimaryContact.canceled -= OnTouchReleased;

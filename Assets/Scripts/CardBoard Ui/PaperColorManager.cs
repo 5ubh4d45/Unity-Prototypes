@@ -21,6 +21,8 @@ public class PaperColorManager : MonoBehaviour
                 SetPaperColor(paperColorButton.PaperColor, paperColorButton.ButtonColor);
             });
         }
+        
+        SetPaperColor(_paperColorButtons[1].PaperColor, _paperColorButtons[1].ButtonColor);
     }
 
     private void OnDestroy()

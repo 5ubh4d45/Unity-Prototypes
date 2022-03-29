@@ -9,20 +9,20 @@ public class DragHandler : MonoBehaviour
     [SerializeField] private float _dragPhysicsSpeed = 5f;
     [SerializeField] private float _dragSpeed = 0.1f;
 
-    private InputManager _inputManager;
+    [SerializeField] private InputManager _inputManager;
     
     private bool _isTouchPressed = false;
     // [HideInInspector]
     public bool CanDrag;
     private Vector3 _velocity;
-    private Camera _mainCamera;
+    [SerializeField] private Camera _mainCamera;
     private WaitForFixedUpdate _waitForFixedUpdate = new WaitForFixedUpdate();
 
     private void OnEnable()
     {
         InputManager.TouchPressed += OnTouchPressed;
         InputManager.TouchReleased += OnTouchReleased;
-        _mainCamera = Camera.main;
+        // _mainCamera = Camera.main;
     }
 
     private void OnDisable()
@@ -31,18 +31,18 @@ public class DragHandler : MonoBehaviour
         InputManager.TouchReleased -= OnTouchReleased;
     }
 
-    // private void Awake()
-    // {
-    //     _mainCamera = Camera.main;
-    //     CanDrag = true;
-    //
-    // }
+    private void Awake()
+    {
+        // _mainCamera = Camera.main;
+        // CanDrag = true;
+    
+    }
 
     void Start()
     {
-        
-        _inputManager = InputManager.Instance;
-        CanDrag = true;
+        // _inputManager = InputManager.Instance;
+        // _mainCamera = Camera.main;
+        // CanDrag = true;
     }
 
 

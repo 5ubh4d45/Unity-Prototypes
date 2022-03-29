@@ -13,7 +13,6 @@ public class PaperSlot : MonoBehaviour
 
     private Color _cutOutColor;
     
-    // Start is called before the first frame update
     void Start()
     {
         if (_slotImage ==null) _slotImage = GetComponent<Image>();
@@ -22,7 +21,7 @@ public class PaperSlot : MonoBehaviour
         _draggleblePart.CutoutImage.sprite = _slotImage.sprite;
         _draggleblePart.SetPartName(_slotName);
         _draggleblePart.SetPartNumbers(_numberOfParts);
-        SetPartColor(_slotImage.color);
+        // SetPartColor(_slotImage.color);
     }
 
     // Update is called once per frame

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,7 +11,7 @@ public class CardBoardAssembler : MonoBehaviour
     private static int _totalPartsCount;
     private static bool _CompletedAtttachingParts;
     public static bool CompletedAttachingParts => _CompletedAtttachingParts;
-
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -26,6 +27,31 @@ public class CardBoardAssembler : MonoBehaviour
         {
             // Debug.Log("Completed");
             _CompletedAtttachingParts = true;
+        }
+    }
+
+    private void OnEnable()
+    {
+        CutOutPartsManager.OnColorSelected += ChangeColor;
+    }
+
+    private void OnDisable()
+    {
+        CutOutPartsManager.OnColorSelected -= ChangeColor;
+    }
+
+    private void ChangeColor(string partType, string partName, Color partColor)
+    {
+        foreach (var attachPoint in AttachPoints)
+        {
+            if(attachPoint.AttachableType != partType) return;
+            if (attachPoint.AttachableName == partName)
+            {
+                attachPoint.AttachableMeshRenderer.material.color = partColor;
+                attachPoint.DragableMeshRenderer.material =
+                    attachPoint.AttachableMeshRenderer.material;
+                attachPoint.DragableMeshRenderer.material.color = partColor;
+            }
         }
     }
 
@@ -51,8 +77,9 @@ public class CardBoardAssembler : MonoBehaviour
             }
         }
     }
-    public void ShowPart(AttachPoint attachPoint)
+    public void ShowPart(AttachPoint attachPoint, Material showingMaterial)
     {
+        attachPoint.AttachableMeshRenderer.material = showingMaterial;
         attachPoint.AttachableMeshRenderer.enabled = true;
         attachPoint.HoloGramMeshRenderer.enabled = false;
         attachPoint.CanAttach = false;
@@ -78,17 +105,15 @@ public class CardBoardAssembler : MonoBehaviour
     
 }
 
-public interface IAssembler
-{
-    
-}
 [System.Serializable]
 public class AttachPoint
 {
     public string AttachableName;
+    public string AttachableType;
     [SerializeField]
     private GameObject AtachableObject;
     public MeshRenderer HoloGramMeshRenderer;
+    public MeshRenderer DragableMeshRenderer;
     
     public MeshRenderer AttachableMeshRenderer => AtachableObject.GetComponent<MeshRenderer>();
     public Collider AttachCollider => AtachableObject.GetComponent<Collider>();
@@ -98,7 +123,7 @@ public class AttachPoint
 [System.Serializable]
 public class Attachable
 {
-    public string TargetPointname;
+    public string TargetPointType;
     public Transform AttachPoint;
     public LayerMask AttachMentLayerMask;
     public string TargetTag;
