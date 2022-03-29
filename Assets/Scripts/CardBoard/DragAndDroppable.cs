@@ -17,6 +17,7 @@ public class DragAndDroppable : MonoBehaviour, IDraggable
     private RaycastHit _hit;
     private Camera _mainCamera;
     private bool _canCheck;
+    private MeshRenderer _meshRenderer;
     
     // cached cardboard Assembler & Attachpoint
     private CardBoardAssembler _cBAss;
@@ -28,6 +29,7 @@ public class DragAndDroppable : MonoBehaviour, IDraggable
     {
         // _attachable.AttachPoint = transform;
         _mainCamera = Camera.main;
+        _meshRenderer = GetComponent<MeshRenderer>();
     }
 
     void FixedUpdate()
@@ -57,7 +59,7 @@ public class DragAndDroppable : MonoBehaviour, IDraggable
         if (_cBAss != null && _attachPoint != null && _canShow)
         {
             _cBAss.HideHoloGram(_attachPoint);
-            _cBAss.ShowPart(_attachPoint);
+            _cBAss.ShowPart(_attachPoint, _meshRenderer.material);
             Debug.Log("SettingActive Limb");
             gameObject.SetActive(false);
         }
@@ -100,7 +102,7 @@ public class DragAndDroppable : MonoBehaviour, IDraggable
                 foreach (var attachPoint in cBAss.AttachPoints)
                 {
                     if (attachPoint.AttachCollider.GetInstanceID() == coll.GetInstanceID() &&
-                        attachPoint.CanAttach && attachPoint.AttachableName == _attachable.TargetPointname)
+                        attachPoint.CanAttach && attachPoint.AttachableType == _attachable.TargetPointType)
                     {
                         _cBAss = cBAss;
                         _attachPoint = attachPoint;

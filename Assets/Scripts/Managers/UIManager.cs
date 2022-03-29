@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 
-public class UIManager : GenericSingletonClass<UIManager>
+public class UIManager : MonoBehaviour
 {
     [Header("Input Related")]
     [SerializeField] private Slider _slider;
@@ -29,10 +29,6 @@ public class UIManager : GenericSingletonClass<UIManager>
     // private Vector2 _rotate;
     // public Vector2 Rotate => _rotate;
     // public static event Action Rotate;
-    protected override void Awake()
-    {
-        base.Awake();
-    }
 
     // Start is called before the first frame update
     void Start()
