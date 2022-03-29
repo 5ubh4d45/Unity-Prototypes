@@ -11,8 +11,8 @@ public class DragglebleUIParts : MonoBehaviour, IPointerDownHandler, IBeginDragH
     [SerializeField]private bool _inCutOutSlot = false;
     public bool InCutOutSlot => _inCutOutSlot;
 
-    private string _partName;
-    public string PartName => _partName;
+    private string _partType;
+    public string PartType => _partType;
     public Image CutoutImage { get; set; }
 
     private LeanDrag _leanDrag;
@@ -88,7 +88,7 @@ public class DragglebleUIParts : MonoBehaviour, IPointerDownHandler, IBeginDragH
         }
     }
 
-    public void SetPartName(string partName) { _partName = partName; }
+    public void SetPartName(string partName) { _partType = partName; }
 
     public void SetPartNumbers(int numbers) { _numberOfParts = numbers; }
 

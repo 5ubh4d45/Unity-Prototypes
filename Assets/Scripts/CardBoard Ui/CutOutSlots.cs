@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,9 +8,15 @@ using UnityEngine.UI;
 public class CutOutSlots : MonoBehaviour, IDropHandler
 {
     [SerializeField] private CutOutSlotData _slotData;
-    
+
+    public CutOutSlotData Slotdata => _slotData;
+
     [SerializeField] private Image _slotImage;
 
+    public static event Action<string, string, Color> OnReceivedPart; 
+
+    public CutOutSlotData CutOutSlotData => _slotData;
+    
     private bool _hasRecivedPart;
     
     // Start is called before the first frame update
@@ -37,10 +44,14 @@ public class CutOutSlots : MonoBehaviour, IDropHandler
         if (obj != null)
         {
             obj.TryGetComponent<DragglebleUIParts>(out var dragglebleUIParts);
-            if (dragglebleUIParts != null || dragglebleUIParts.PartName != _slotData.PartName) return;
+            if(dragglebleUIParts == null) return;
+            
+            if (dragglebleUIParts.PartType != _slotData.PartType) return;
             // dragglebleUIParts.PartsCollected();
             _slotImage.color = dragglebleUIParts.CutoutImage.color;
+            _slotData.Color = dragglebleUIParts.CutoutImage.color;
             _hasRecivedPart = true;
+            OnReceivedPart?.Invoke(_slotData.PartType, _slotData.PartName, _slotData.Color);
             dragglebleUIParts.SetInSlot();
         }
     }
@@ -49,9 +60,10 @@ public class CutOutSlots : MonoBehaviour, IDropHandler
 [System.Serializable]
 public struct CutOutSlotData
 {
+    public string PartType;
     public string PartName;
     public Sprite SlotSprite;
     public Color SlotColor;
-    [HideInInspector]
-    public Color PartColor;
+
+    [HideInInspector] public Color Color;
 }

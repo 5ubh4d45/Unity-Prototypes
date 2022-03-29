@@ -20,31 +20,32 @@ public class DragHandler : MonoBehaviour
 
     private void OnEnable()
     {
-        _inputManager = InputManager.Instance;
-        _inputManager.TouchPressed += OnTouchPressed;
-        _inputManager.TouchReleased += OnTouchReleased;
+        InputManager.TouchPressed += OnTouchPressed;
+        InputManager.TouchReleased += OnTouchReleased;
+        _mainCamera = Camera.main;
     }
 
     private void OnDisable()
     {
-        _inputManager.TouchReleased -= OnTouchPressed;
-        _inputManager.TouchReleased -= OnTouchReleased;
+        InputManager.TouchReleased -= OnTouchPressed;
+        InputManager.TouchReleased -= OnTouchReleased;
     }
 
-    private void Awake()
-    {
-        _mainCamera = Camera.main;
-        _inputManager = InputManager.Instance;
-        CanDrag = true;
-
-    }
+    // private void Awake()
+    // {
+    //     _mainCamera = Camera.main;
+    //     CanDrag = true;
+    //
+    // }
 
     void Start()
     {
         
+        _inputManager = InputManager.Instance;
+        CanDrag = true;
     }
 
-    
+
     void Update()
     {
         // Debug.Log($"DH TouchPos: {InputManager.Instance.TouchPosition}");

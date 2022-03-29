@@ -7,8 +7,8 @@ using UnityEngine.UIElements;
 
 public class InputManager : GenericSingletonClass<InputManager>
 {
-    public event Action TouchPressed;
-    public event Action TouchReleased;
+    public static event Action TouchPressed;
+    public static event Action TouchReleased;
 
     
     // private Vector2 _touchPosition;
@@ -29,6 +29,7 @@ public class InputManager : GenericSingletonClass<InputManager>
 
     private void OnEnable()
     {
+        _playerActions = new PlayerActions();
         _playerActions.Enable();
         _playerActions.PlayerActionMap.PrimaryContact.started += OnTouchPressed;
         _playerActions.PlayerActionMap.PrimaryContact.canceled += OnTouchReleased;
