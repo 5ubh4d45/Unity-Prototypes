@@ -10,7 +10,18 @@ public class CardBoardAssembler : MonoBehaviour
     private static int _CompletedPartsCount;
     private static int _totalPartsCount;
     private static bool _CompletedAtttachingParts;
-    public static bool CompletedAttachingParts => _CompletedAtttachingParts;
+
+    public static bool CompletedAttachingParts
+    {
+        get
+        {
+            return _CompletedAtttachingParts;
+        }
+        set
+        {
+            _CompletedAtttachingParts = value;
+        }
+    }
     
     // Start is called before the first frame update
     void Start()
