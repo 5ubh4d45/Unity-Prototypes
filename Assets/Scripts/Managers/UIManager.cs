@@ -40,6 +40,7 @@ public class UIManager : MonoBehaviour
     private void OnEnable()
     {
         Initiate();
+        CardBoardAssembler.CompletedAttachingParts = false;
     }
 
     // Update is called once per frame

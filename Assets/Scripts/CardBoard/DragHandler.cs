@@ -55,6 +55,11 @@ public class DragHandler : MonoBehaviour
     {
         // Debug.Log("TouchPressed DH");
         _isTouchPressed = true;
+        if (_mainCamera == null)
+        {
+            _mainCamera = Camera.main;
+            return;
+        }
         
         if (!CanDrag) return;
         
