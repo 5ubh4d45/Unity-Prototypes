@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,68 +6,138 @@ using UnityEngine;
 public class CardBoardAssembler : MonoBehaviour
 {
     public AttachPoint[] AttachPoints;
+
+    private static int _CompletedPartsCount;
+    private static int _totalPartsCount;
+    private static bool _CompletedAtttachingParts;
+
+    public static bool CompletedAttachingParts
+    {
+        get
+        {
+            return _CompletedAtttachingParts;
+        }
+        set
+        {
+            _CompletedAtttachingParts = value;
+        }
+    }
     
     // Start is called before the first frame update
     void Start()
     {
-        
+        HideParts();
+        CheckCounts();
+        // Debug.Log($"Total Parts: {_totalPartsCount} \n Completed Parts: {_CompletedPartsCount}");
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (_CompletedPartsCount >= _totalPartsCount)
+        {
+            // Debug.Log("Completed");
+            _CompletedAtttachingParts = true;
+        }
+    }
+
+    private void OnEnable()
+    {
+        CutOutPartsManager.OnColorSelected += ChangeColor;
+    }
+
+    private void OnDisable()
+    {
+        CutOutPartsManager.OnColorSelected -= ChangeColor;
+    }
+
+    private void ChangeColor(string partType, string partName, Color partColor)
+    {
+        foreach (var attachPoint in AttachPoints)
+        {
+            if(attachPoint.AttachableType != partType) return;
+            if (attachPoint.AttachableName == partName)
+            {
+                attachPoint.AttachableMeshRenderer.material.color = partColor;
+                attachPoint.DragableMeshRenderer.material =
+                    attachPoint.AttachableMeshRenderer.material;
+                attachPoint.DragableMeshRenderer.material.color = partColor;
+            }
+        }
+    }
+
+    private void HideParts()
+    {
+        for (int i = 0; i < AttachPoints.Length; i++)
+        {
+            AttachPoints[i].AttachableMeshRenderer.enabled = false;
+            AttachPoints[i].HoloGramMeshRenderer.gameObject.SetActive(true);
+            AttachPoints[i].HoloGramMeshRenderer.enabled = false;
+        }
+    }
+
+    private void CheckCounts()
+    {
+        for (int i = 0; i < AttachPoints.Length; i++)
+        {
+            _totalPartsCount++;
+            
+            if (AttachPoints[i].HasAttached)
+            {
+                _CompletedPartsCount++;
+            }
+        }
+    }
+    public void ShowPart(AttachPoint attachPoint, Material showingMaterial)
+    {
+        attachPoint.AttachableMeshRenderer.material = showingMaterial;
+        attachPoint.AttachableMeshRenderer.enabled = true;
+        attachPoint.HoloGramMeshRenderer.enabled = false;
+        attachPoint.CanAttach = false;
+        attachPoint.HasAttached = true;
+        attachPoint.AttachCollider.enabled = false;
+        _CompletedPartsCount++;
+    }
+
+    public IEnumerator ShowHoloGram(AttachPoint attachPoint)
+    {
+        // Debug.Log($"Showing HoloGram : {attachPoint.AttachCollider.name}");
+        attachPoint.HoloGramMeshRenderer.enabled = true;
+        yield return new WaitForSeconds(2f);
+        HideHoloGram(attachPoint);
         
     }
-
-    private void CheckForCollision()
-    {
-        for (int i = 0; i < AttachPoints.Length; i++)
-        {
-            AttachPoints[i].CanAttach = AttachPoints[i].PointReciver.CanAttach;
-            ShowParts();
-        }
-    }
-
-    private void ShowParts()
-    {
-        for (int i = 0; i < AttachPoints.Length; i++)
-        {
-            if(!AttachPoints[i].CanAttach) return;
-            
-            if (!AttachPoints[i].HasAttached)
-            {
-                AttachPoints[i].AttachableGameObject.SetActive(true);
-                Debug.Log("Enabling Atatchment!");
-                AttachPoints[i].HasAttached = false;
-            }
-            else
-            {
-                AttachPoints[i].AttachableGameObject.SetActive(false);
-            }
-        }
-    }
     
+    public void HideHoloGram(AttachPoint attachPoint)
+    {
+        // Debug.Log($"Hiding HoloGram : {attachPoint.AttachCollider.name}");
+        attachPoint.HoloGramMeshRenderer.enabled = false;
+    }
     
 }
 
-public interface IAssembler
-{
-    
-}
 [System.Serializable]
 public class AttachPoint
 {
-    public string AttachPointName;
     public string AttachableName;
-    public Collider AttachCollider;
-    public AttachPointReciver PointReciver;
-    public GameObject AttachableGameObject;
+    public string AttachableType;
+    [SerializeField]
+    private GameObject AtachableObject;
+    public MeshRenderer HoloGramMeshRenderer;
+    public MeshRenderer DragableMeshRenderer;
+    
+    public MeshRenderer AttachableMeshRenderer => AtachableObject.GetComponent<MeshRenderer>();
+    public Collider AttachCollider => AtachableObject.GetComponent<Collider>();
     public bool CanAttach;
-    public bool HasAttached;
+    [field: HideInInspector]public bool HasAttached { get; set; }
 }
 [System.Serializable]
-public struct Attachable
+public class Attachable
 {
-    public string TargetPointname;
+    public string TargetPointType;
     public Transform AttachPoint;
+    public LayerMask AttachMentLayerMask;
+    public string TargetTag;
+    public Vector3 DetectionBox;
+    public Vector3 DetectionBoxOffset;
 }

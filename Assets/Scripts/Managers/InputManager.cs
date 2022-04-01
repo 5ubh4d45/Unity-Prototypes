@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
-public class InputManager : PersistentSingleton<InputManager>
+public class InputManager : MonoBehaviour
 {
     public static event Action TouchPressed;
     public static event Action TouchReleased;
@@ -16,9 +16,9 @@ public class InputManager : PersistentSingleton<InputManager>
     private bool _isTouchPressed = false;
     private PlayerActions _playerActions;
 
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
+        // base.Awake();
         _playerActions = new PlayerActions();
     }
     
@@ -29,6 +29,7 @@ public class InputManager : PersistentSingleton<InputManager>
 
     private void OnEnable()
     {
+        _playerActions = new PlayerActions();
         _playerActions.Enable();
         _playerActions.PlayerActionMap.PrimaryContact.started += OnTouchPressed;
         _playerActions.PlayerActionMap.PrimaryContact.canceled += OnTouchReleased;
@@ -55,62 +56,6 @@ public class InputManager : PersistentSingleton<InputManager>
         TouchReleased?.Invoke();
     }
     
-
-    #region Redundant
-    
-    // private void OnTouchPressed(InputAction.CallbackContext context)
-    // {
-    //     _isTouchPressed = true;
-    //     _dragHandler.OnTouchPressed();
-    //     // Ray ray = _mainCamera.ScreenPointToRay(_playerActions.PlayerActionMap.PrimaryPosition.ReadValue<Vector2>());
-    //     // RaycastHit hit;
-    //     // Debug.DrawRay(ray.origin, ray.direction *10, Color.red);
-    //     // if (Physics.Raycast(ray, out hit))
-    //     // {
-    //     //     if (hit.collider != null && hit.collider.gameObject.GetComponent<IDraggable>() != null)
-    //     //     {
-    //     //         // Debug.Log($"Clicking object {hit.collider.name}");
-    //     //         StartCoroutine(DragUpdate(hit.collider.gameObject));
-    //     //     }
-    //     // }
-    // }
-    
-    // private IEnumerator DragUpdate(GameObject clickedObject)
-    // {
-    //     float initialDistanceFromCamera =
-    //         Vector3.Distance(clickedObject.transform.position, _mainCamera.transform.position);
-    //     clickedObject.TryGetComponent<Rigidbody>(out var rb);
-    //     clickedObject.TryGetComponent<IDraggable>(out var iDragComponent);
-    //     iDragComponent?.OnStartDrag();
-    //     while (_isTouchPressed)
-    //     {
-    //         Ray ray = _mainCamera.ScreenPointToRay(_playerActions.PlayerActionMap.PrimaryPosition.ReadValue<Vector2>());
-    //         Debug.DrawRay(ray.origin, ray.direction *10, Color.yellow);
-    //         if (rb != null)
-    //         {
-    //             // Debug.Log($"Clicking object {rb.name}");
-    //             Vector3 direction = ray.GetPoint(initialDistanceFromCamera) - clickedObject.transform.position;
-    //             rb.velocity = direction * _dragPhysicsSpeed;
-    //             iDragComponent?.OnDragging();
-    //             yield return _waitForFixedUpdate;
-    //         }
-    //         else
-    //         {
-    //             clickedObject.transform.position = Vector3.SmoothDamp(clickedObject.transform.position, ray.GetPoint(initialDistanceFromCamera), ref _velocity, _dragSpeed);
-    //             iDragComponent?.OnDragging();
-    //             yield return null;
-    //         }
-    //     }
-    //     iDragComponent?.OnEndDrag();
-    // }
-    
-    // private void OnTouchReleased(InputAction.CallbackContext obj)
-    // {
-    //     _isTouchPressed = false;
-    //     _dragHandler.OnTouchReleased();
-    //     // Debug.Log($"Touch released");
-    // }
-    #endregion
 
     void Update()
     {
