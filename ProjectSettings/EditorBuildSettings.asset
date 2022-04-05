@@ -6,13 +6,13 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Starting Scene.unity
+    path: Assets/Scenes/3DCraftGame/Starting Scene.unity
     guid: b2477aff937c26d4a82f9dd6f53bccb9
   - enabled: 1
-    path: Assets/Scenes/PrototypeScene.unity
+    path: Assets/Scenes/3DCraftGame/PrototypeScene.unity
     guid: c850ee8c3b14cc8459e7e186857cf567
   - enabled: 1
-    path: Assets/Scenes/PrototypeScene 1.unity
+    path: Assets/Scenes/3DCraftGame/PrototypeScene 1.unity
     guid: 357c47b54d7c8de489cf9028ab45a5d2
   m_configObjects:
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000,
