@@ -24,6 +24,7 @@ namespace FidgetMathGame
         void Start()
         {
             _canRotate = true;
+            // MathBall.TextUI.enabled = false;
         }
 
         // Update is called once per frame

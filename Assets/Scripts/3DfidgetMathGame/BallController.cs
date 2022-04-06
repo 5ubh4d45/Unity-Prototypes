@@ -18,6 +18,8 @@ namespace FidgetMathGame
         
         [SerializeField] private List<FidgetBall> _fidgetMathBalls;
 
+        public static bool CanTap;
+        
         private Vector3 _rotationTargetRev;
         private Vector2 _pointerPositionScr;
 
@@ -47,7 +49,7 @@ namespace FidgetMathGame
         // Update is called once per frame
         void Update()
         {
-            _pointerPositionScr = _inputManager.GetTouchPostion();
+            
         }
 
 
@@ -58,6 +60,8 @@ namespace FidgetMathGame
         private void OnTouchPressed()
         {
             _isTouchPressed = true;
+            
+            if(!CanTap) return;
             
             // Debug.Log("Clicked");
             if (_mainCamera == null)
