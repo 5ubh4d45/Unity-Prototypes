@@ -12,6 +12,7 @@ namespace WebGLSnailGame
     public class DirectionDetector : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI _scoreTMPro;
+        [SerializeField] private Image _detectorImage;
 
         public static event Action<KeyDirection> OnCorrectKey;
         public static event Action<KeyDirection> OnIncorrectKey;
@@ -27,6 +28,7 @@ namespace WebGLSnailGame
         private void Awake()
         {
             _rectTransform = GetComponent<RectTransform>();
+            if (_detectorImage == null) _detectorImage = GetComponent<Image>();
         }
 
         // Start is called before the first frame update
@@ -35,13 +37,7 @@ namespace WebGLSnailGame
             DirectionKeyUI.DetectorPosition = _rectTransform.anchoredPosition;
             DirectionKeyUI.DetectorWidth = _rectTransform.rect.width;
         }
-
-        // Update is called once per frame
-        void Update()
-        {
-            
-        }
-
+        
         private void OnEnable()
         {
             DirectionKeyUI.OnEnterDetection += UpdateCurrentKey;
@@ -84,7 +80,7 @@ namespace WebGLSnailGame
 
                 _score += 100;
                 _scoreTMPro.text = "Score: " + _score.ToString();
-
+                StartCoroutine(FlashDetector(Color.green));
                 if (_cachedKeyObj != null)
                 {
                     _cachedKeyObj.GetComponent<Image>().color = Color.green;
@@ -97,11 +93,20 @@ namespace WebGLSnailGame
                 _canTakeValue = false;
                 _score -= 50;
                 _scoreTMPro.text = "Score: " + _score.ToString();
+                StartCoroutine(FlashDetector(Color.red));
                 if (_cachedKeyObj != null)
                 {
                     _cachedKeyObj.GetComponent<Image>().color = Color.red;
                 }
             }
+        }
+
+        private IEnumerator FlashDetector(Color targetColor)
+        {
+            var defaultColor = Color.white;
+            _detectorImage.color = targetColor;
+            yield return new WaitForSeconds(0.2f);
+            _detectorImage.color = defaultColor;
         }
         
     }
