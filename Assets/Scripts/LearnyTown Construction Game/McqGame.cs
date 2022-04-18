@@ -9,7 +9,11 @@ namespace LearnyTown.ConstructionGame
 {
     public class McqGame : MonoBehaviour
     {
-        [SerializeField] private string _correctAnswer;
+        [SerializeField] private Button _nextButton;
+        [SerializeField] private GameObject _winScreen;
+        [SerializeField] private TextMeshProUGUI _winScreenText;
+        
+        [Space] [SerializeField] private string _correctAnswer;
         [SerializeField] private List<AnswerButton> _answerButtons;
 
         // Start is called before the first frame update
@@ -40,7 +44,7 @@ namespace LearnyTown.ConstructionGame
         }
         private void CheckAnswer(string choice)
         {
-            if (choice == _correctAnswer)
+            if (String.Equals(choice, _correctAnswer, StringComparison.CurrentCultureIgnoreCase))
             {
                 Debug.Log($"{choice} is Correct answer!!");
             }
