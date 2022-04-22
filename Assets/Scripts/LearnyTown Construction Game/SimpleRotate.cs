@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,7 +14,7 @@ namespace LearnyTown.ConstructionGame
 
         // Start is called before the first frame update
         void Start()
-        {
+        { 
             transform.DOLocalRotate(_rotationTarget, _rotateDuration, RotateMode.FastBeyond360).SetEase(Ease.Linear).SetLoops(-1);
         }
 
@@ -22,6 +23,10 @@ namespace LearnyTown.ConstructionGame
         {
 
         }
-        
+
+        private void OnDestroy()
+        {
+            DOTween.Kill(transform);
+        }
     }
 }
