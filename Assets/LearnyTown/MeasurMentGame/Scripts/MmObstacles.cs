@@ -28,8 +28,10 @@ namespace LearnyTown.MeasurMentGame
             _canMove = true;
             if (_randomGaps)
             {
-                int gap = Random.Range(1, 10);
-                int offset = Random.Range(0, 10);
+                var length = _asteroids.SpawnPoints.Count;
+                var midPoint = length / 2;
+                int offset = Random.Range(-midPoint, midPoint);
+                int gap = Random.Range(1, length);
                 SetAsteroids(gap, offset);
             }
             else
@@ -69,23 +71,32 @@ namespace LearnyTown.MeasurMentGame
 
         public void SetAsteroids(int gap, int offSet)
         {
-            var length = _asteroids.SpwanPoints.Count;
-            var startingPoint = offSet;
+            var length = _asteroids.SpawnPoints.Count;
+            var midPoint = length / 2;
+            var startingPoint = offSet + midPoint;
             int actualGap;
-            if ((gap + offSet) < length)
+            if ((gap + startingPoint) < length && (gap + startingPoint) > 0)
             {
                 actualGap = gap;
             }
             else
             {
-                actualGap = Mathf.Clamp(gap, 0, length - offSet);
+                actualGap = Mathf.Clamp(gap, 1, length - startingPoint);
+            }
+            
+
+            foreach (var spawnPoint in _asteroids.SpawnPoints)
+            {
+                var scale = 1 + Random.Range(0, 0.3f);
+                // var obj = spwanPoint.GetChild(0);
+                spawnPoint.localScale = new Vector3(scale, scale, scale);
             }
 
             // Debug.Log($"starting Point: {startingPoint}, actualGap: {actualGap}");
             for (int i = startingPoint; i < startingPoint + actualGap; i++)
             {
-                var obj = _asteroids.SpwanPoints[i].transform.GetChild(0);
-                // Debug.Log($"{_asteroids.SpwanPoints[i].name}  child: {obj.name}");
+                var obj = _asteroids.SpawnPoints[i].transform.GetChild(0);
+                // Debug.Log($"{_asteroids.SpawnPoints[i].name}  child: {obj.name}");
                 _avgLaneXPos += obj.position.x;
                 obj.gameObject.SetActive(false);
             }
@@ -100,7 +111,7 @@ namespace LearnyTown.MeasurMentGame
     {
         public int OffSet;
         public int Gap;
-        public List<Transform> SpwanPoints;
-        public GameObject AsteroidPrefab;
+        public List<Transform> SpawnPoints;
+        // public GameObject AsteroidPrefab;
     }
 }

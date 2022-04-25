@@ -12,6 +12,11 @@ public class MMGamePlayerController : MonoBehaviour
     
     [Space][SerializeField] private float _laneChangeTime;
     [SerializeField] private Transform _laneEntryTransform;
+
+
+    private int _currentGap;
+
+    private float _currentLanePosX;
     
     // Start is called before the first frame update
     void Start()
@@ -21,11 +26,13 @@ public class MMGamePlayerController : MonoBehaviour
 
     private void OnEnable()
     {
-        MmObstaclesManager.ObstacleRegistered += SetMove;
+        MmObstaclesManager.ObstacleRegistered += SetObstacle;
+        MmButtonPanel.OnButtonPressed += SetMove;
     }
     private void OnDisable()
     {
-        MmObstaclesManager.ObstacleRegistered -= SetMove;
+        MmObstaclesManager.ObstacleRegistered -= SetObstacle;
+        MmButtonPanel.OnButtonPressed -= SetMove;
     }
 
     // Update is called once per frame
@@ -34,12 +41,22 @@ public class MMGamePlayerController : MonoBehaviour
         
     }
 
-    private void SetMove(int gap, float lanePosX)
+    private void SetObstacle(int gap, float lanePosX)
     {
+        _currentGap = gap;
+        _currentLanePosX = lanePosX;
+        Debug.Log($"Current Gap : {_currentGap}");
+    }
+    
+    private void SetMove(int gapInput)
+    {
+        Debug.Log($"Input : {gapInput}");
         // transform.position = new Vector3(_laneEntryTransform.position.x, transform.position.y, transform.position.z);
-        SetPlayerScale(gap);
+        if (gapInput != _currentGap) {Debug.Log($"Incorrect"); return;}
         
-        _shuttle.DOMove(new Vector3(lanePosX, _shuttle.position.y, _shuttle.position.z), _laneChangeTime)
+        SetPlayerScale(gapInput);
+        Debug.Log($"Correct");
+        _shuttle.DOMove(new Vector3(_currentLanePosX, _shuttle.position.y, _shuttle.position.z), _laneChangeTime)
             .SetEase(Ease.InSine);
     }
 

@@ -50,7 +50,7 @@ namespace LearnyTown.MeasurMentGame
         private void SetLaneEntryPoint(int gap, float lanePosX)
         {
             _laneEntryPoint.position = new Vector3(lanePosX, _laneEntryPoint.position.y, _laneEntryPoint.position.z);
-            Debug.Log($"Gap: {gap}");
+            // Debug.Log($"Gap: {gap}");
             ObstacleRegistered?.Invoke(gap, lanePosX);
         }
 
@@ -58,7 +58,7 @@ namespace LearnyTown.MeasurMentGame
         {
             if (_nextSpawnTime >= _spwanTime)
             {
-                var obj = Instantiate(ObstacleLinePrefab, _spawnTransform.position, Quaternion.identity);
+                var obj = Instantiate(ObstacleLinePrefab, _spawnTransform.position, Quaternion.identity, transform);
                 obj.TryGetComponent<MmObstacles>(out var mmObstacles);
                 mmObstacles._targetEndPoint = _destoryTransform;
                 _nextSpawnTime = 0;
