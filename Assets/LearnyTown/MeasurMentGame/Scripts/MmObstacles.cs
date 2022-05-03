@@ -10,18 +10,24 @@ namespace LearnyTown.MeasurMentGame
     public class MmObstacles : MonoBehaviour
     {
         [SerializeField] public Transform _targetEndPoint;
+        [SerializeField] public Transform _playerTransform;
         [SerializeField] private float _speed;
         [SerializeField] private bool _randomGaps;
         [Space] [SerializeField] private MmAsteroids _asteroids;
 
-        public static event Action<int, float> OnEnteringLanePoint;
+        public static event Action<int, float, GameObject> OnEnteringLanePoint;
+        public static event Action<int> SetScore; 
 
 
         private float _avgLaneXPos;
         private int _actualGap;
         private bool _enteredLanePoint;
         private bool _canMove;
-        
+        public bool HasProperlyCrossedPlayer;
+        public bool BehindPlayer;
+        public bool GotCorrectAns;
+        private bool _canSetScore = true;
+
         // Start is called before the first frame update
         void Start()
         {
@@ -48,9 +54,11 @@ namespace LearnyTown.MeasurMentGame
 
             if (transform.position.z <= MmObstaclesManager.LaneEntryPointZ && !_enteredLanePoint)
             {
-                OnEnteringLanePoint?.Invoke(_actualGap, _avgLaneXPos);
+                OnEnteringLanePoint?.Invoke(_actualGap, _avgLaneXPos, gameObject);
                 _enteredLanePoint = true;
             }
+            CheckForPlayer();
+            CheckForScore();
         }
         
         private void MoveTowardsEnd(Vector3 target, float speed)
@@ -60,13 +68,30 @@ namespace LearnyTown.MeasurMentGame
             dir.Normalize();
             if (_canMove)
             {
-                transform.position += dir * (speed * Time.fixedDeltaTime);
+                transform.position += dir * (speed * Time.fixedDeltaTime * Time.timeScale);
             }
 
             if (transform.position.z <= target.z)
             {
                 Destroy(gameObject);
             }
+        }
+
+        private void CheckForPlayer()
+        {
+            // if(_playerTransform == null) return;
+            if (HasProperlyCrossedPlayer) return;
+
+            if (transform.position.z <= _playerTransform.position.z)
+            {
+                BehindPlayer = true;
+            }
+
+            if (BehindPlayer && GotCorrectAns)
+            {
+                HasProperlyCrossedPlayer = true;
+            }
+            // BehindPlayer = false;
         }
 
         public void SetAsteroids(int gap, int offSet)
@@ -104,6 +129,32 @@ namespace LearnyTown.MeasurMentGame
             _actualGap = actualGap;
             _avgLaneXPos /= actualGap;
         }
+        
+        private void CheckForScore()
+        {
+            // if( is null) return;
+            
+            if(!_canSetScore) return;
+        
+            if (HasProperlyCrossedPlayer)
+            {
+                // Debug.Log($"Cleared obstacle");
+                SetScore?.Invoke(100);
+                _canSetScore = false;
+                return;
+            }
+
+            if (BehindPlayer && !HasProperlyCrossedPlayer)
+            {
+                // Debug.Log($"couldn't clear obstacles");
+                // Debug.Log("Score: -100");
+                SetScore?.Invoke(-100);
+
+                _canSetScore = false;
+                return;
+            }
+        }
+        
     }
 
     [Serializable]
