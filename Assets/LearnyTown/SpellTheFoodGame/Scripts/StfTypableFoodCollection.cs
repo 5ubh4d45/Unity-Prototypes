@@ -12,24 +12,47 @@ namespace LearnyTown.SpellTheFoodGame
         [SerializeField] private Color _defaultColor;
         [SerializeField] private Color _correctAnswerColor;
         [SerializeField] private Color _wrongAnswerColor;
+
+        [Space] [SerializeField] private StfJuicerData _juicerData;
+        [SerializeField] private float _juicerUnitLevel;
         
         [Space] [SerializeField] private Vector2 _spacing;
         [SerializeField] private float _offSetX;
         [SerializeField] private List<GameObject> _foodPrefabs;
 
-        private List<StfFoodObj> _spawnedFoods;
-    
+        [Space] [SerializeField] private bool _hasGeneratedFoods;
+        [SerializeField] private List<StfFoodObj> _spawnedFoods;
+        
+        
+        private char _inputKey;
+        private int _currentFoodLetterIndex = 0;
+        private int _noOfCorrectAnswer = 0;
+        private bool _completedWord;
+        private bool _gotAnswer;
+
+
+        public static event Action<StfJuicerData> OnCorrectAnswer;
+        public static event Action<StfJuicerData> OnResetAnswer; 
+        public static event Action<StfJuicerData> OnCorreectInput;
+
+
+        private void OnEnable()
+        {
+            StfTypableFoodManager.OnInputChar += CheckForInput;
+        }
+
+        private void OnDisable()
+        {
+            StfTypableFoodManager.OnInputChar -= CheckForInput;
+        }
+
+
         // Start is called before the first frame update
         void Start()
         {
-
-            // foreach (var food in _foodPrefab)
-            // {
-            //     Instantiate(food, transform);
-            // }
             // Debug.Log("startingTest");
-            GenerateFood();
-            PositionFood();
+            if (!_hasGeneratedFoods) GenerateFood();
+            _juicerUnitLevel = 1f / (float)_foodName.Length;
         }
 
         // // Update is called once per frame
@@ -41,20 +64,27 @@ namespace LearnyTown.SpellTheFoodGame
         [ContextMenu("Generate Food")]
         public void GenerateFood()
         {
+            
             int minRange = 0;
             int maxRange = _foodPrefabs.Count; // as in int Random.Range is exclusive
+
             
+
             // clearing previous generation if not null
             if (_spawnedFoods != null)
             {
                 foreach (var food in _spawnedFoods)
                 {
+                    if (food.typableFood == null) continue;
+                    
                     DestroyImmediate(food.typableFood.gameObject);
                 }
                 _spawnedFoods = null;
             }
             
             _spawnedFoods = new List<StfFoodObj>(_foodName.Length);
+            
+            _hasGeneratedFoods = true;
             
             foreach (var letter in _foodName)
             {
@@ -76,7 +106,7 @@ namespace LearnyTown.SpellTheFoodGame
                 
                 // Debug.Log($"temp letter {tempFoodObj.Letter}; current Letter {letter}");
             }
-            
+
             // position foods
             PositionFood();
         }
@@ -106,6 +136,49 @@ namespace LearnyTown.SpellTheFoodGame
                 
                 // Debug.Log($"Positioning {spawningPos}, index {i}, letter {_spawnedFoods[i].letter}, name {_spawnedFoods[i].typableFood.name}");
             }
+        }
+
+        private void CheckForInput(char currentKey)
+        {
+            _inputKey = currentKey;
+            if (_gotAnswer) return;
+
+            if (_completedWord)
+            {
+                _completedWord = false;
+                _currentFoodLetterIndex = 0;
+                _noOfCorrectAnswer = 0;
+                _juicerData.JuicerLevel = 0;
+                
+                OnResetAnswer?.Invoke(_juicerData);
+                foreach (var food in _spawnedFoods)
+                {
+                    food.typableFood.ResetKey();
+                }
+            }
+
+            if (_foodName[_currentFoodLetterIndex].Equals(_inputKey))
+            {
+                _spawnedFoods[_currentFoodLetterIndex].typableFood.SetCorrectAnswer(_correctAnswerColor);
+                _noOfCorrectAnswer++;
+
+                _juicerData.JuicerLevel += _juicerUnitLevel;
+                OnCorreectInput?.Invoke(_juicerData);
+            }
+            else if (!_foodName[_currentFoodLetterIndex].Equals(_inputKey))
+            {
+                _spawnedFoods[_currentFoodLetterIndex].typableFood.SetWrongAnswer(_wrongAnswerColor, _inputKey);
+                _noOfCorrectAnswer--;
+            }
+
+            _currentFoodLetterIndex++;
+
+            if (_noOfCorrectAnswer == _foodName.Length) _gotAnswer = true;
+            
+            if (_currentFoodLetterIndex >= _foodName.Length) _completedWord = true;
+
+
+
         }
     }
 

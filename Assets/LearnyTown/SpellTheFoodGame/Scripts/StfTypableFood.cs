@@ -7,7 +7,7 @@ namespace LearnyTown.SpellTheFoodGame
     public class StfTypableFood : MonoBehaviour
     {
         [SerializeField] private TextMeshPro _letterText;
-
+        [SerializeField] private MeshRenderer _foodRenderer;
 
         private string _defaultKey;
         private Color _defaultColor;
@@ -29,25 +29,33 @@ namespace LearnyTown.SpellTheFoodGame
         {
             _defaultColor = defaultColor;
             _defaultKey = defaultChar.ToString().ToUpper();
-            _letterText.text = _defaultKey;
+            _letterText.SetText(_defaultKey);
         }
         
         public void SetCorrectAnswer(Color greenColor)
         {
             _letterText.color = greenColor;
+            // _foodRenderer.enabled = false;
+            // Debug.Log($"Correct Answer: {_defaultKey}");
         }
         
         public void SetWrongAnswer(Color redColor, char wrongKey)
         {
+            var tempKey = wrongKey.ToString().ToUpper();
+            _letterText.SetText(tempKey);
             _letterText.color = redColor;
-            _letterText.text = wrongKey.ToString().ToUpper();
+            // Debug.Log($"wrong Answer: {wrongKey}");
+
         }
         
-        public void ResetColor()
+        public void ResetKey()
         {
             _letterText.color = _defaultColor;
             // _letterText.color = Color.white;
-            _letterText.text = _defaultKey;
+            _letterText.SetText(_defaultKey);
+            // _foodRenderer.enabled = true;
+            Debug.Log($"Reset!");
+
         }
     }
 }
