@@ -8,6 +8,8 @@ namespace LearnyTown.SpellTheFoodGame
     public class StfTypableFoodCollection : MonoBehaviour
     {
     
+        [Space] [SerializeField] private bool _canTakeInput = true;
+
         [SerializeField] private string _foodName;
         [SerializeField] private Color _defaultColor;
         [SerializeField] private Color _correctAnswerColor;
@@ -33,7 +35,7 @@ namespace LearnyTown.SpellTheFoodGame
 
         public static event Action<StfJuicerData> OnCorrectAnswer;
         public static event Action<StfJuicerData> OnResetAnswer; 
-        public static event Action<StfJuicerData> OnCorreectInput;
+        public static event Action<StfJuicerData> OnCorrectInput;
 
 
         private void OnEnable()
@@ -140,6 +142,8 @@ namespace LearnyTown.SpellTheFoodGame
 
         private void CheckForInput(char currentKey)
         {
+            if (!_canTakeInput) return;
+            
             _inputKey = currentKey;
             if (_gotAnswer) return;
 
@@ -163,7 +167,7 @@ namespace LearnyTown.SpellTheFoodGame
                 _noOfCorrectAnswer++;
 
                 _juicerData.JuicerLevel += _juicerUnitLevel;
-                OnCorreectInput?.Invoke(_juicerData);
+                OnCorrectInput?.Invoke(_juicerData);
             }
             else if (!_foodName[_currentFoodLetterIndex].Equals(_inputKey))
             {
@@ -173,12 +177,25 @@ namespace LearnyTown.SpellTheFoodGame
 
             _currentFoodLetterIndex++;
 
-            if (_noOfCorrectAnswer == _foodName.Length) _gotAnswer = true;
-            
-            if (_currentFoodLetterIndex >= _foodName.Length) _completedWord = true;
+            if (_noOfCorrectAnswer == _foodName.Length)
+            {
+                _gotAnswer = true;
+                _canTakeInput = false;
+                OnCorrectAnswer?.Invoke(_juicerData);
+            }
+
+            if (_currentFoodLetterIndex >= _foodName.Length)
+            {
+                _completedWord = true;
+            }
 
 
 
+        }
+
+        public void SetInputTakingStatus(bool canTakeInput)
+        {
+            _canTakeInput = canTakeInput;
         }
     }
 

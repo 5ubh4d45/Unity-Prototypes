@@ -11,7 +11,7 @@ namespace LearnyTown.SpellTheFoodGame
 
         [SerializeField] private LiquidVolume _liquidVolume;
         [SerializeField] private float _liquidRiseSpeed;
-        
+
         
         [Space]
         [SerializeField] public float _liquidLevel;
