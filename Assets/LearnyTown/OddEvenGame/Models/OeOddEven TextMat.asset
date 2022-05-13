@@ -10,7 +10,6 @@ Material:
   m_Name: LiberationSans SDF Material
   m_Shader: {fileID: 4800000, guid: 14eb328de4b8eb245bb7cea29e4ac00b, type: 3}
   m_ValidKeywords:
-  - BEVEL_ON
   - GLOW_ON
   m_InvalidKeywords: []
   m_LightmapFlags: 1
@@ -59,21 +58,21 @@ Material:
     - _FaceShininess: 0
     - _FaceUVSpeedX: 0
     - _FaceUVSpeedY: 0
-    - _GlowInner: 0.05
-    - _GlowOffset: 0.22
-    - _GlowOuter: 0.05
-    - _GlowPower: 0.598
+    - _GlowInner: 0.488
+    - _GlowOffset: 0.29
+    - _GlowOuter: 0.637
+    - _GlowPower: 0.223
     - _GradientScale: 10
-    - _LightAngle: 3.1416
+    - _LightAngle: 3.34
     - _MaskSoftnessX: 0
     - _MaskSoftnessY: 0
     - _OutlineShininess: 0
     - _OutlineSoftness: 0
     - _OutlineUVSpeedX: 0
     - _OutlineUVSpeedY: 0
-    - _OutlineWidth: 0
+    - _OutlineWidth: 0.058
     - _PerspectiveFilter: 0.875
-    - _Reflectivity: 10
+    - _Reflectivity: 10.88
     - _ScaleRatioA: 0.9
     - _ScaleRatioB: 0.73125
     - _ScaleRatioC: 0.73125
@@ -81,7 +80,7 @@ Material:
     - _ScaleY: 1
     - _ShaderFlags: 0
     - _Sharpness: 0
-    - _SpecularPower: 2
+    - _SpecularPower: 2.25
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0
@@ -101,13 +100,13 @@ Material:
     - _ClipRect: {r: -32767, g: -32767, b: 32767, a: 32767}
     - _EnvMatrixRotation: {r: 0, g: 0, b: 0, a: 0}
     - _FaceColor: {r: 1, g: 1, b: 1, a: 1}
-    - _GlowColor: {r: 0.9245283, g: 0.5656084, b: 0, a: 0.5}
+    - _GlowColor: {r: 0, g: 1, b: 0.7607844, a: 0.5}
     - _MaskCoord: {r: 0, g: 0, b: 32767, a: 32767}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _ReflectFaceColor: {r: 0, g: 0, b: 0, a: 1}
     - _ReflectOutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor: {r: 0.3915094, g: 0.92255366, b: 1, a: 1}
     - _UnderlayColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_BuildTextureStacks: []
 --- !u!114 &11400000
@@ -120,11 +119,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
-  m_Name: LiberationSans SDF
+  m_Name: OeOddEven TextMat
   m_EditorClassIdentifier: 
-  hashCode: 231247347
+  hashCode: -1759982088
   material: {fileID: 2180264}
-  materialHashCode: 198912371
+  materialHashCode: -1491848872
   m_Version: 1.1.0
   m_SourceFontFileGUID: e3265ab4bf004d28a9537516768c1c75
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: e3265ab4bf004d28a9537516768c1c75,
