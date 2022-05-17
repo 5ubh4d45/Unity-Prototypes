@@ -44,18 +44,21 @@ namespace LearnyTown.OddEvenGame
             if (_isCurrentNoEven == isEven)
             {
                 Debug.Log("RightAnswer");
-                _score += 100f;
-                _scoreCard.SetText($"SCORE: {_score}");
+                SetScore(100);
                 SetInstruction();
             }else
             {
                 Debug.Log("WrongAnswer");
-                _score -= 100f;
-                _scoreCard.SetText($"SCORE: {_score}");
+                SetScore(-100);
                 SetInstruction();
             }
         }
 
+        private void SetScore(int scoresToAdd)
+        {
+            _score += scoresToAdd;
+            _scoreCard.SetText($"SCORE: {_score}");
+        }
         private void SetInstruction()
         {
             _isCurrentNoEven = 0 == Random.Range(0, 2);
