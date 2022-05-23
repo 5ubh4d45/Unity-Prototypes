@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -9,7 +10,8 @@ namespace LearnyTown.MathRacingGame
     public class MrUiManager : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI _problemText;
-        [SerializeField] private TextMeshProUGUI _answerText;
+        [SerializeField] private TMP_InputField _answerText;
+        [SerializeField] private TextMeshProUGUI _scoreText;
     
         public static event Action<int> OnAnswer;
         
@@ -28,23 +30,30 @@ namespace LearnyTown.MathRacingGame
 
         private MrQuestionDetails _currentQuestion;
         private float _currentAnswer;
+        private string _currentAnswerText;
+        private int _score;
 
         // Start is called before the first frame update
         void Start()
         {
-        
+            SetQuestions();
         }
 
         // Update is called once per frame
         void Update()
         {
-            if (Keyboard.current.leftArrowKey.wasPressedThisFrame)
+            // if (Keyboard.current.leftArrowKey.wasPressedThisFrame)
+            // {
+            //     OnAnswer?.Invoke(1);
+            // }
+            // if (Keyboard.current.rightArrowKey.wasPressedThisFrame)
+            // {
+            //     OnAnswer?.Invoke(-1);
+            // }
+
+            if (Keyboard.current.enterKey.wasPressedThisFrame)
             {
-                OnAnswer?.Invoke(1);
-            }
-            if (Keyboard.current.rightArrowKey.wasPressedThisFrame)
-            {
-                OnAnswer?.Invoke(-1);
+                CheckAnswer();
             }
         }
 
@@ -58,6 +67,31 @@ namespace LearnyTown.MathRacingGame
             string question = $"{_currentQuestion.Num1} {_currentQuestion.Sign} {_currentQuestion.Num2}";
             
             _problemText.SetText(question);
+        }
+
+        private void CheckAnswer()
+        {
+            if (_answerText.text.Equals(_currentAnswer.ToString(CultureInfo.InvariantCulture)))
+            {
+                _answerText.text = String.Empty;
+                OnAnswer?.Invoke(-1);
+                
+                _score += 100;
+                
+                SetQuestions();
+            }
+            else
+            {
+                _answerText.text = String.Empty;
+                OnAnswer?.Invoke(1);
+                
+                _score -= 100;
+                
+                SetQuestions();
+            }
+
+            _score = Mathf.Clamp(_score, 0, _score);
+            _scoreText.SetText($"Score: {_score}");
         }
 
         private void ChooseQuestion()
