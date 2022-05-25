@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 namespace LearnyTown.MathRacingGame
@@ -11,8 +13,9 @@ namespace LearnyTown.MathRacingGame
     {
         [SerializeField] private TextMeshProUGUI _problemText;
         [SerializeField] private TMP_InputField _answerText;
+        [SerializeField] private List<Button> _answerMcqButtons;
         [SerializeField] private TextMeshProUGUI _scoreText;
-    
+
         public static event Action<int> OnAnswer;
         
         private enum MrQsMode
@@ -33,9 +36,28 @@ namespace LearnyTown.MathRacingGame
         private string _currentAnswerText;
         private int _score;
 
+        private List<MrMcqButton> _mcqButtons;
+        private int _noOfMcqButtons;
+        
+        [Serializable]
+        internal class MrMcqButton
+        {
+            internal Button McqButton;
+            internal TextMeshProUGUI McqText;
+            
+            public MrMcqButton(Button button, TextMeshProUGUI mcqText)
+            {
+                McqButton = button;
+                McqText = mcqText;
+            }
+        }
+
         // Start is called before the first frame update
         void Start()
         {
+            _noOfMcqButtons = _answerMcqButtons.Count;
+            SetMqcButtons();
+            
             SetQuestions();
         }
 
@@ -67,6 +89,8 @@ namespace LearnyTown.MathRacingGame
             string question = $"{_currentQuestion.Num1} {_currentQuestion.Sign} {_currentQuestion.Num2}";
             
             _problemText.SetText(question);
+            
+            SetMcqAnswers();
         }
 
         private void CheckAnswer()
@@ -78,7 +102,6 @@ namespace LearnyTown.MathRacingGame
                 
                 _score += 100;
                 
-                SetQuestions();
             }
             else
             {
@@ -87,8 +110,9 @@ namespace LearnyTown.MathRacingGame
                 
                 _score -= 100;
                 
-                SetQuestions();
             }
+            
+            SetQuestions();
 
             _score = Mathf.Clamp(_score, 0, _score);
             _scoreText.SetText($"Score: {_score}");
@@ -142,6 +166,70 @@ namespace LearnyTown.MathRacingGame
             _currentQuestion.Num2 = num2;
             _currentQuestion.Ans = ans;
         }
-    
+        
+        private void SetMqcButtons()
+        {
+            if (_answerMcqButtons == null) return;
+
+            _mcqButtons = new List<MrMcqButton>(_noOfMcqButtons);
+
+            int i = 0;
+            foreach (var mcqButton in _answerMcqButtons)
+            {
+                var button = mcqButton;
+                var text = mcqButton.GetComponentInChildren<TextMeshProUGUI>();
+                
+                _mcqButtons.Add(new MrMcqButton(button, text));
+                
+                var i1 = i;
+                _mcqButtons[i].McqButton.onClick.AddListener(() => CheckMcqAnswer(_mcqButtons[i1].McqText.text));
+
+                i++;
+            }
+        }
+
+        private void SetMcqAnswers()
+        {
+            int GetRandomAns(int upperLimit) { return Random.Range(0, upperLimit); }
+
+            int correctAnsIndex = GetRandomAns(_noOfMcqButtons);
+            
+            for (int i = 0; i < _noOfMcqButtons; i++)
+            {
+                if (i == correctAnsIndex)
+                {
+                    _mcqButtons[i].McqText.text = _currentAnswer.ToString(CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    _mcqButtons[i].McqText.text = GetRandomAns(100).ToString(CultureInfo.InvariantCulture);
+                }
+            }
+        }
+        private void CheckMcqAnswer(string mcqAns)
+        {
+            // Debug.Log($"{mcqAns}");
+            if (mcqAns.Equals(_currentAnswer.ToString(CultureInfo.InvariantCulture)))
+            {
+                _answerText.text = String.Empty;
+                OnAnswer?.Invoke(-1);
+                
+                _score += 100;
+                
+            }
+            else
+            {
+                _answerText.text = String.Empty;
+                OnAnswer?.Invoke(1);
+                
+                _score -= 100;
+                
+            }
+            
+            SetQuestions();
+
+            _score = Mathf.Clamp(_score, 0, _score);
+            _scoreText.SetText($"Score: {_score}");
+        }
     }
 }
