@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using Random = UnityEngine.Random;
 
 namespace LearnyTown.NumberMatchingGame
 {
@@ -9,7 +12,7 @@ namespace LearnyTown.NumberMatchingGame
         [SerializeField] private Vector2Int _gridSize;
         [SerializeField] private float _cellSize;
         
-        
+        [Space]
         [SerializeField] private List<NmPuzzlePiece> _puzzlePieces;
 
 
@@ -20,7 +23,23 @@ namespace LearnyTown.NumberMatchingGame
         private Vector3 _upperLeftStartingPoint;
         private Vector3 _spawningPoint;
 
-        private List<NmPuzzlePiece> _spawnedPuzzlePieces;
+        [HideInInspector][SerializeField] private List<NmPuzzlePiece> _spawnedPuzzlePieces;
+
+        private PlayerActions _playerActions; 
+
+        private void OnEnable()
+        {
+            _playerActions = new PlayerActions();
+            _playerActions.Enable();
+            _playerActions.PlayerActionMap.PrimaryContact.started += OnClick;
+        }
+
+        private void OnDisable()
+        {
+            _playerActions.Disable();
+            _playerActions.PlayerActionMap.PrimaryContact.started -= OnClick;
+
+        }
 
         // Start is called before the first frame update
         void Start()
@@ -31,7 +50,39 @@ namespace LearnyTown.NumberMatchingGame
         // Update is called once per frame
         void Update()
         {
-        
+           
+        }
+
+        private void OnClick(InputAction.CallbackContext ctx)
+        {
+            var pos = _playerActions.PlayerActionMap.PrimaryPosition.ReadValue<Vector2>();
+            DoPuzzleCheck(pos);
+            // Debug.Log($"Clicked! {pos}");
+        }
+
+        private void DoPuzzleCheck(Vector2 mousePoint)
+        {
+            var ray = Camera.main.ScreenPointToRay(mousePoint);
+            Debug.DrawRay(ray.origin, ray.direction * 10, Color.red);
+
+            Physics.Raycast(ray, out RaycastHit hit, 30f);
+            // Debug.Log($"{hit.collider.name}");
+            
+            var obj = hit.collider;
+            obj.TryGetComponent<NmPuzzlePiece>(out var puzzlePiece);
+
+            if (puzzlePiece != null)
+            {
+                if (puzzlePiece.isOpen)
+                {
+                    puzzlePiece.ClosePuzzle();
+                }
+                else
+                {
+                    puzzlePiece.OpenPuzzle();
+                }
+            }
+            
         }
 
         // [ContextMenu("Clear Grid")]
@@ -40,7 +91,10 @@ namespace LearnyTown.NumberMatchingGame
             if (_spawnedPuzzlePieces == null) return;
             foreach (var spawnedPuzzle in _spawnedPuzzlePieces)
             {
-                DestroyImmediate(spawnedPuzzle.gameObject);
+                if (spawnedPuzzle != null)
+                {
+                    DestroyImmediate(spawnedPuzzle.gameObject);
+                }
             }
 
             _spawnedPuzzlePieces = null;

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7858756265110997824}
   - component: {fileID: 7858756265110997825}
+  - component: {fileID: 6257975967780227149}
   m_Layer: 0
   m_Name: Square
   m_TagString: Untagged
@@ -51,7 +52,20 @@ MonoBehaviour:
   _bodyObj: {fileID: 7047712295991347904}
   _numberText: {fileID: 7858756266230519387}
   _targetLidPoint: {x: 0, y: 0, z: 1}
-  _puzzleOpenTime: 0
+  _puzzleOpenTime: 0.5
+--- !u!65 &6257975967780227149
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7858756265110997831}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.5375206, y: 1, z: 1.5659437}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7858756266230519385
 GameObject:
   m_ObjectHideFlags: 0

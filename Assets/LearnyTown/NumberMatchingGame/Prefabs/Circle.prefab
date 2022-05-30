@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3101895758753188657}
   - component: {fileID: 3101895758753188656}
+  - component: {fileID: 202703825872070118}
   m_Layer: 0
   m_Name: Circle
   m_TagString: Untagged
@@ -51,7 +52,20 @@ MonoBehaviour:
   _bodyObj: {fileID: 2868032186204541437}
   _numberText: {fileID: 3101895759469086416}
   _targetLidPoint: {x: 0, y: 0, z: 1}
-  _puzzleOpenTime: 2
+  _puzzleOpenTime: 0.5
+--- !u!65 &202703825872070118
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3101895758753188658}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.6060429, y: 1, z: 1.5766397}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3101895759469086418
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,7 +17,7 @@ namespace LearnyTown.NumberMatchingGame
         
         
         private int _number;
-        private bool _isOpen;
+        internal bool isOpen;
         
         // Start is called before the first frame update
         void Start()
@@ -41,13 +41,13 @@ namespace LearnyTown.NumberMatchingGame
         internal void OpenPuzzle()
         {
             _lidObj.transform.DOLocalMove(_targetLidPoint, _puzzleOpenTime).SetEase(Ease.OutElastic)
-                .OnComplete(() => _isOpen = true);
+                .OnComplete(() => isOpen = true);
         }
         [ContextMenu("Close Puzzle")]
         internal void ClosePuzzle()
         {
             _lidObj.transform.DOLocalMove(new Vector3(0, 0, 0), _puzzleOpenTime).SetEase(Ease.OutElastic)
-                .OnComplete(() => _isOpen = false);
+                .OnComplete(() => isOpen = false);
         }
 
         internal void DeletePuzzle()
