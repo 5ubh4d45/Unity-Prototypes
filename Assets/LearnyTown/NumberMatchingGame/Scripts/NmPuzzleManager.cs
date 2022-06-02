@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
@@ -8,24 +10,33 @@ namespace LearnyTown.NumberMatchingGame
 {
     public class NmPuzzleManager : MonoBehaviour
     {
-
+        [Tooltip("Make Even Number Grid")]
         [SerializeField] private Vector2Int _gridSize;
         [SerializeField] private float _cellSize;
+        [SerializeField] private float _openingTime;
+
+        [Space] [SerializeField] private TextMeshProUGUI _scoreText;
         
         [Space]
         [SerializeField] private List<NmPuzzlePiece> _puzzlePieces;
 
 
-        private int _totalTypesOfPieces;
+        private int _noOfCorrectAnswers;
+        private int _typesOfPieces;
         private int _totalNoOfPieces;
         private float _totalWidth;
         private float _totalHeight;
         private Vector3 _upperLeftStartingPoint;
         private Vector3 _spawningPoint;
 
-        [HideInInspector][SerializeField] private List<NmPuzzlePiece> _spawnedPuzzlePieces;
+        private NmPuzzlePiece _currentPuzzlePiece;
+        private NmPuzzlePiece _previousPuzzlePiece;
 
-        private PlayerActions _playerActions; 
+        [SerializeField] private List<NmPuzzlePiece> _spawnedPuzzlePieces;
+
+        private PlayerActions _playerActions;
+        private bool _canClickPuzzle;
+        private int _score;
 
         private void OnEnable()
         {
@@ -44,7 +55,7 @@ namespace LearnyTown.NumberMatchingGame
         // Start is called before the first frame update
         void Start()
         {
-           
+           GenerateGrid();
         }
 
         // Update is called once per frame
@@ -53,8 +64,17 @@ namespace LearnyTown.NumberMatchingGame
            
         }
 
+        #region Gameplay
+
+        
+
+        #endregion
+
+        #region Clicking And Interaction
+        
         private void OnClick(InputAction.CallbackContext ctx)
         {
+            if (!_canClickPuzzle) return;
             var pos = _playerActions.PlayerActionMap.PrimaryPosition.ReadValue<Vector2>();
             DoPuzzleCheck(pos);
             // Debug.Log($"Clicked! {pos}");
@@ -70,21 +90,57 @@ namespace LearnyTown.NumberMatchingGame
             
             var obj = hit.collider;
             obj.TryGetComponent<NmPuzzlePiece>(out var puzzlePiece);
-
+            
             if (puzzlePiece != null)
             {
-                if (puzzlePiece.isOpen)
+                if(_previousPuzzlePiece != null) StartCoroutine(_previousPuzzlePiece.ClosePuzzle());
+                
+                _currentPuzzlePiece = puzzlePiece;
+                if (_currentPuzzlePiece.isOpen)
                 {
-                    puzzlePiece.ClosePuzzle();
+                    StartCoroutine(_currentPuzzlePiece.ClosePuzzle());
                 }
                 else
                 {
-                    puzzlePiece.OpenPuzzle();
+                    StartCoroutine(_currentPuzzlePiece.OpenPuzzle());
+                    // checking numbers
+                    if (_previousPuzzlePiece != null)
+                    {
+                        if (_previousPuzzlePiece.GetNumber() == _currentPuzzlePiece.GetNumber())
+                        {
+                            StartCoroutine(_previousPuzzlePiece.OpenPuzzle());
+                            
+                            // score set
+                            SetScore(100);
+                            _noOfCorrectAnswers += 2;
+                            
+                            _previousPuzzlePiece.DeletePuzzle();
+                            _currentPuzzlePiece.DeletePuzzle();
+                        }
+                        else
+                        {
+                            // score set
+                            SetScore(-20);
+                        }
+                    }
                 }
+
+                
+                _previousPuzzlePiece = _currentPuzzlePiece;
             }
             
         }
 
+        private void SetScore(int addedValue)
+        {
+            _score += addedValue;
+            _score = Mathf.Clamp(_score, 0, _score); 
+            _scoreText.SetText($"Score: {_score}");
+        }
+        
+        #endregion
+
+        #region GridControls
         // [ContextMenu("Clear Grid")]
         private void ClearGrid()
         {
@@ -103,8 +159,10 @@ namespace LearnyTown.NumberMatchingGame
         [ContextMenu("Generate Grid")]
         private void GenerateGrid()
         {
-            _totalTypesOfPieces = _puzzlePieces.Count;
+            _typesOfPieces = _puzzlePieces.Count;
             _totalNoOfPieces = (_gridSize.x * _gridSize.y);
+            
+            
             _totalHeight = _cellSize * (_gridSize.x - 1f);
             _totalWidth = _cellSize * (_gridSize.y - 1f);
             
@@ -129,7 +187,7 @@ namespace LearnyTown.NumberMatchingGame
                 for (int j = 0; j < _gridSize.y; j++)
                 {
                     // choosing random piece
-                    int pieceIndex = Random.Range(0, _totalTypesOfPieces);
+                    int pieceIndex = Random.Range(0, _typesOfPieces);
                     var puzzleObj = _puzzlePieces[pieceIndex];
                     
                     var spawnedObj = Instantiate(puzzleObj, transform);
@@ -143,7 +201,55 @@ namespace LearnyTown.NumberMatchingGame
                 _spawningPoint.z -= _cellSize;
 
             }
+            
+            // // show numbers
+            // for (int i = 0; i < _totalNoOfPieces; i++)
+            // {
+            //     Debug.Log($"Default Before: {_spawnedPuzzlePieces[i].gameObject.GetInstanceID()}");
+            // }
 
+            var tempPuzzles = _spawnedPuzzlePieces;
+            // shuffling of the pieces
+            for (int i = 0; i < tempPuzzles.Count; i++)
+            {
+                var temp = tempPuzzles[i];
+                int randomIndex = Random.Range(0, tempPuzzles.Count);
+                tempPuzzles[i] = tempPuzzles[randomIndex];
+                tempPuzzles[randomIndex] = temp;
+            }
+            
+            // setting values
+            for (var i = 0; i < _totalNoOfPieces; i += 2)
+            {
+                var num = Random.Range(0, 100);
+                tempPuzzles[i].SetNumber(num);
+                tempPuzzles[i+1].SetNumber(num);
+            }
+
+            // for (int i = 0; i < _totalNoOfPieces; i++)
+            // {
+            //     Debug.Log($"Default {_spawnedPuzzlePieces[i].gameObject.GetInstanceID()}");
+            //     Debug.Log($"Modified {tempPuzzles[i].gameObject.GetInstanceID()}");
+            // }
+
+            // show numbers
+            StartCoroutine(PlayPuzzleStartingAnimation(_openingTime, _spawnedPuzzlePieces));
         }
+        
+        private IEnumerator PlayPuzzleStartingAnimation(float delay, List<NmPuzzlePiece> puzzlePieces)
+        {
+            _canClickPuzzle = false;
+            foreach (var puzzle in puzzlePieces)
+            {
+                StartCoroutine(puzzle.OpenPuzzle());
+                yield return new WaitForSeconds(delay);
+                StartCoroutine(puzzle.ClosePuzzle());
+                yield return new WaitForSeconds(delay);
+            }
+
+            _canClickPuzzle = true;
+        }
+        
+        #endregion
     }
 }

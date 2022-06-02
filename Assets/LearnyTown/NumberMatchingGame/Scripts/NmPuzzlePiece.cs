@@ -1,3 +1,4 @@
+using System.Collections;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -37,17 +38,25 @@ namespace LearnyTown.NumberMatchingGame
             _numberText.SetText(_number.ToString());
         }
 
+        internal int GetNumber()
+        {
+            return _number;
+        }
+
         [ContextMenu("Open Puzzle")]
-        internal void OpenPuzzle()
+        internal IEnumerator OpenPuzzle()
         {
             _lidObj.transform.DOLocalMove(_targetLidPoint, _puzzleOpenTime).SetEase(Ease.OutElastic)
                 .OnComplete(() => isOpen = true);
+            yield return new WaitForSeconds(_puzzleOpenTime);
+
         }
         [ContextMenu("Close Puzzle")]
-        internal void ClosePuzzle()
+        internal IEnumerator ClosePuzzle()
         {
             _lidObj.transform.DOLocalMove(new Vector3(0, 0, 0), _puzzleOpenTime).SetEase(Ease.OutElastic)
                 .OnComplete(() => isOpen = false);
+            yield return new WaitForSeconds(_puzzleOpenTime);
         }
 
         internal void DeletePuzzle()
