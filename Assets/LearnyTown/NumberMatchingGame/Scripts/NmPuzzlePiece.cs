@@ -59,10 +59,11 @@ namespace LearnyTown.NumberMatchingGame
             yield return new WaitForSeconds(_puzzleOpenTime);
         }
 
-        internal void DeletePuzzle()
+        internal IEnumerator DeletePuzzle()
         {
             _bodyObj.GetComponent<Renderer>().material.DOFade(0f, 0.5f).SetEase(Ease.Linear)
                 .OnComplete(() => Destroy(gameObject));
+            yield return new WaitForSeconds(_puzzleOpenTime);
         }
     }
 }

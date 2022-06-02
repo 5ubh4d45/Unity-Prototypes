@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -37,12 +38,17 @@ namespace LearnyTown.NumberMatchingGame
         private PlayerActions _playerActions;
         private bool _canClickPuzzle;
         private int _score;
+        private Vector2Int _currentGrid;
 
         private void OnEnable()
         {
             _playerActions = new PlayerActions();
             _playerActions.Enable();
             _playerActions.PlayerActionMap.PrimaryContact.started += OnClick;
+
+            NmUiManager.OnLevelSelection += StartLevel;
+            NmUiManager.OnLevelRetry += () => StartLevel(_currentGrid);
+            NmUiManager.OnLevelExit += EndLevel;
         }
 
         private void OnDisable()
@@ -55,7 +61,9 @@ namespace LearnyTown.NumberMatchingGame
         // Start is called before the first frame update
         void Start()
         {
-           GenerateGrid();
+           // GenerateGrid();
+           _canClickPuzzle = false;
+           _currentGrid = _gridSize;
         }
 
         // Update is called once per frame
@@ -64,9 +72,22 @@ namespace LearnyTown.NumberMatchingGame
            
         }
 
-        #region Gameplay
+        #region LevelManagement
 
+        private void EndLevel()
+        {
+            DOTween.Clear();
+            _canClickPuzzle = false;
+        }
         
+        private void StartLevel(Vector2Int grid)
+        {
+            _currentGrid = grid;
+            _gridSize = _currentGrid;
+            _score = 0;
+            _scoreText.SetText($"Score: {_score}");
+            GenerateGrid();
+        }
 
         #endregion
 
@@ -85,7 +106,7 @@ namespace LearnyTown.NumberMatchingGame
             var ray = Camera.main.ScreenPointToRay(mousePoint);
             Debug.DrawRay(ray.origin, ray.direction * 10, Color.red);
 
-            Physics.Raycast(ray, out RaycastHit hit, 30f);
+            Physics.Raycast(ray, out RaycastHit hit, 100f);
             // Debug.Log($"{hit.collider.name}");
             
             var obj = hit.collider;
@@ -114,8 +135,8 @@ namespace LearnyTown.NumberMatchingGame
                             SetScore(100);
                             _noOfCorrectAnswers += 2;
                             
-                            _previousPuzzlePiece.DeletePuzzle();
-                            _currentPuzzlePiece.DeletePuzzle();
+                            StartCoroutine(_previousPuzzlePiece.DeletePuzzle());
+                            StartCoroutine(_currentPuzzlePiece.DeletePuzzle());
                         }
                         else
                         {
@@ -124,9 +145,13 @@ namespace LearnyTown.NumberMatchingGame
                         }
                     }
                 }
-
                 
                 _previousPuzzlePiece = _currentPuzzlePiece;
+                
+                if (_noOfCorrectAnswers >= _totalNoOfPieces)
+                {
+                    StartCoroutine(GenerateGridCoRoutine());
+                }
             }
             
         }
@@ -153,11 +178,17 @@ namespace LearnyTown.NumberMatchingGame
                 }
             }
 
+            _noOfCorrectAnswers = 0;
             _spawnedPuzzlePieces = null;
         }
 
+        internal IEnumerator GenerateGridCoRoutine()
+        {
+            yield return new WaitForSeconds(2f);
+            GenerateGrid();
+        }
         [ContextMenu("Generate Grid")]
-        private void GenerateGrid()
+        internal void GenerateGrid()
         {
             _typesOfPieces = _puzzlePieces.Count;
             _totalNoOfPieces = (_gridSize.x * _gridSize.y);
