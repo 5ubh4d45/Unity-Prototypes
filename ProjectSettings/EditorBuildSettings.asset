@@ -6,28 +6,28 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/Scenes/3DCraftGame/Starting Scene.unity
+    path: Assets/_Project/Scenes/3DCraftGame/Starting Scene.unity
     guid: b2477aff937c26d4a82f9dd6f53bccb9
   - enabled: 0
-    path: Assets/Scenes/3DCraftGame/PrototypeScene.unity
+    path: Assets/_Project/Scenes/3DCraftGame/PrototypeScene.unity
     guid: c850ee8c3b14cc8459e7e186857cf567
   - enabled: 0
-    path: Assets/Scenes/3DCraftGame/PrototypeScene 1.unity
+    path: Assets/_Project/Scenes/3DCraftGame/PrototypeScene 1.unity
     guid: 357c47b54d7c8de489cf9028ab45a5d2
   - enabled: 1
-    path: Assets/Scenes/3DFidgetMathGame/ProtoScene 0.unity
+    path: Assets/_Project/Scenes/3DFidgetMathGame/ProtoScene 0.unity
     guid: c4fd6a07f9878f44687a947eb1247f91
   - enabled: 1
-    path: Assets/Scenes/3DFidgetMathGame/ProtoScene 1.unity
+    path: Assets/_Project/Scenes/3DFidgetMathGame/ProtoScene 1.unity
     guid: e8ddb39d1151f514eb1f5a64c776c39c
   - enabled: 1
-    path: Assets/Scenes/3DFidgetMathGame/ProtoScene 2.unity
+    path: Assets/_Project/Scenes/3DFidgetMathGame/ProtoScene 2.unity
     guid: a08f47efb2879b94f8d38d0b85ce8208
   - enabled: 1
-    path: Assets/Scenes/3DFidgetMathGame/ProtoScene 3.unity
+    path: Assets/_Project/Scenes/3DFidgetMathGame/ProtoScene 3.unity
     guid: 35e3c39d6a0272c48ba2fd3557f18fc3
   - enabled: 0
-    path: Assets/Scenes/WebglSnailGame/SnailProto.unity
+    path: Assets/_Project/Scenes/WebglSnailGame/SnailProto.unity
     guid: ebb8e164a932b64459f22db299149c4e
   m_configObjects:
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: a3674b949c582054d9ed6a3314bc8aad,
