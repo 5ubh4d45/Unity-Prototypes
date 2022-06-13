@@ -6,6 +6,7 @@ namespace LearnyTown.MeasurMentGame
 {
     public class MmMovables : MonoBehaviour
     {
+        [SerializeField] private bool _destroyAfterEndPoint;
         [SerializeField] private float _targetRespawnDistance;
         [SerializeField] private float _targetEndDistance;
         [SerializeField] private float _speed;
@@ -34,6 +35,10 @@ namespace LearnyTown.MeasurMentGame
             if (transform.position.z <= target)
             {
                 transform.position = new Vector3(transform.position.x, transform.position.y,_targetRespawnDistance);
+                if (_destroyAfterEndPoint)
+                {
+                    Destroy(gameObject);
+                }
             }
             else
             {
