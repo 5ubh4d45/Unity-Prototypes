@@ -72,6 +72,16 @@ namespace LearnyTown.FractionFootballGame
             }
         }
 
+        private void OnEnable()
+        {
+            FfUiManager.OnResetAnswer += DoMoveCenter;
+        }
+
+        private void OnDisable()
+        {
+            FfUiManager.OnResetAnswer -= DoMoveCenter;
+        }
+
         // [ContextMenu("Move Left")]
         private void DoMoveLeft(float ballPosX, float ballPosY = 0f)
         {

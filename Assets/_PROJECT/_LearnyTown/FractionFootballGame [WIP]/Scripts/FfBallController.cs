@@ -7,14 +7,14 @@ namespace LearnyTown.FractionFootballGame
     public class FfBallController : MonoBehaviour
     {
         [SerializeField] private Rigidbody _rb;
+        [SerializeField] private Vector3 _startingPos;
 
 
-        private Vector3 _startingPos;
         
         // Start is called before the first frame update
         void Start()
         {
-            _startingPos = transform.position;
+            // _startingPos = transform.position;
         }
         
         internal void KickBall(Vector3 force)
